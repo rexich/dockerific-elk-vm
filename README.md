@@ -1,2 +1,33 @@
-# dockerific-elk-vm
-Dockerized ELK stack with some maintenance scripts for a virtual, guest machine
+# Dockerific ELK stack
+
+Dockerific ELK is a collection of Docker services working together, whose task is to collect logs from a host machine that emits them through rsyslog, store them and provide analysis tools.
+
+It uses the Docker Engine and Docker Compose in order to create and run the necessary containers for the three services separately. Also provided are several maintenance scripts. It also uses Elasticsearch's Curator for periodic maintenance of the Elasticsearch's indices, and some scripts to warn the user 
+
+It uses the official Docker images of the powerful [Elasticsearch](https://registry.hub.docker.com/_/elasticsearch/) search and analytics engine, [Logstash](https://registry.hub.docker.com/_/logstash/) to capture and forward the logs, and [Kibana](https://registry.hub.docker.com/_/kibana/) to analyze and visualize information.
+
+Tested successfully on Ubuntu 14.04 LTS running on VirtualBox, and Ubuntu 16.04 LTS running on my laptop.
+
+## Prerequisites
+
+* A host or VirtualBox machine running Ubuntu 14.04 or 16.04 LTS,
+* Latest [Docker Engine](https://docs.docker.com/engine/installation/) installed (tested on 1.12.3),
+* Latest [Docker Compose](https://docs.docker.com/compose/install/) installed (tested on 1.8.1),
+* More than 4 GiB of RAM,
+* Superuser rights for the setup script,
+* rsyslog installed and configured (by default in Ubuntu).
+
+## Important notes
+
+Running the setup script requires superuser (root) rights, because it adds a configuration file for rsyslog in its configuration directory, and also adds a sysctl tunable for [increasing the limit of the maximum number of memory-mapped areas](http://stackoverflow.com/a/11685165), since Elasticsearch performs more rigorous checks by default.
+Running the services using the `docker.io` package found in the official Ubuntu repositories is not supported.
+
+## Setup, installation, and removal
+
+Clone (or download as ZIP) this repository to the host computer. Install Docker Engine and Docker Compose.
+Run the script maintenance/setup.sh on the host machine with superuser rights `(sudo)`. It will configure `rsyslog` to emit the logs to Logstash, set the necessary `sysctl` tunable for Elasticsearch, configure several `cron` scripts for maintenance tasks, and add a tool called `ls-images` that displays a pretty-printed list of all available Docker images. Run `setup.sh --help` for detailed information, including removal.
+
+I hope it serves you well! Cheers and happy hacking! :)
+
+Copyright © 2016 Filip Dimovski (dimfilip20@gmail.com)
+The scripts and files of this project's repository are subject to the GNU General Public License, version 3, unless noted otherwise.

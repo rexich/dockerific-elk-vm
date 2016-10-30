@@ -1,0 +1,60 @@
+version: '2'
+
+services:
+  # Define the Elasticsearch service
+  elasticsearch:
+    # Directory containing the Dockerfile
+    build: elasticsearch/
+    # Port mappings to ensure this container is network-accessible
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    # Elasticseach is a Java program that requires lots of heap
+    # memory to perform well and fast. Since the underlying library
+    # used by Elasticseach is Lucene, and the library's data is
+    # stored as immutable files, the Linux kernel will cache them
+    # in the unused memory segments of the system. It is wise to
+    # let Elasticsearch use 50% of RAM for the heap, and leave the
+    # rest for the Lucene library to increase efficiency.
+    # In my case, the virtual machine I'm using has 2 GiB of RAM
+    # allocated, so I dedicate 1 GiB for Elasticdata. This is set
+    # in the enviromental variable ES_HEAP_SIZE=1g.
+    # Reference: https://www.elastic.co/guide/en/elasticsearch/guide/current/heap-sizing.html#_give_less_than_half_your_memory_to_lucene
+    environment:
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+    # Put this container on the same Docker network as the others
+    # so they can communicate between each other
+    networks:
+      - elk_dockerized
+    # Store the data and config in volumes
+    volumes:
+      - ./elasticsearch/data:/usr/share/elasticsearch/data
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+  # Define the Logstash service
+  logstash:
+    # Directory containing the Dockerfile
+    build: logstash/
+    # Override the default configuration directory
+    command: -f /etc/logstash/conf.d/
+    # The configuration files are stored in a mapped volume
+    volumes:
+      - ./logstash/conf:/etc/logstash/conf.d
+    # Map this port so we can send the rsyslog from host to Logstash
+    ports:
+      - "5000:5000"
+    # Put this container on the same Docker network as the others
+    # so they can communicate between each other
+    networks:
+      - elk_dockerized
+  kibana:
+    build: kibana/
+    volumes:
+      - ./kibana/config/:/opt/kibana/config/
+    ports:
+      - "5601:5601"
+    networks:
+      - elk_dockerized
+
+networks:
+  elk_dockerized:
+    driver: bridge

@@ -1,0 +1,19 @@
+# Starting with version 5, network host should not be localhost,
+# since it does not perform well within a Docker container instance.
+# See: 
+network.host: 0.0.0.0
+
+# One node is enough to form a cluster
+# See: https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html#minimum_master_nodes
+discovery.zen.minimum_master_nodes: 1
+
+# Set up a cluster, all nodes must have the same cluster name!
+cluster.name: production
+node.name: ${HOSTNAME}
+
+# Let this be the master node that will also hold data
+node.master: true
+node.data: true
+
+# Log file paths 
+path.logs: /var/log/elasticsearch

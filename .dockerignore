@@ -1,0 +1,2 @@
+# Ignore the maintenance directory, not needed by Docker
+maintenance
