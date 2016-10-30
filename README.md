@@ -21,11 +21,13 @@ Tested successfully on Ubuntu 14.04 LTS running on VirtualBox, and Ubuntu 16.04 
 ## Important notes
 
 Running the setup script requires superuser (root) rights, because it adds a configuration file for rsyslog in its configuration directory, and also adds a sysctl tunable for [increasing the limit of the maximum number of memory-mapped areas](http://stackoverflow.com/a/11685165), since Elasticsearch performs more rigorous checks by default.
+
 Running the services using the `docker.io` package found in the official Ubuntu repositories is not supported.
 
 ## Setup, installation, and removal
 
 Clone (or download as ZIP) this repository to the host computer. Install Docker Engine and Docker Compose.
+
 Run the script `maintenance/setup.sh` on the host machine with superuser rights (using `sudo`). It will configure `rsyslog` to emit the logs to Logstash, set the necessary `sysctl` tunable for Elasticsearch, configure several `cron` scripts for maintenance tasks, and add a tool called `ls-images` that displays a pretty-printed list of all available Docker images. Run `setup.sh --help` for detailed information, including removal.
 
 ## Usage
@@ -41,13 +43,15 @@ $ docker-compose up -d
 ```
 
 in the project's directory. Give it a few seconds to start, then open `http://localhost:5601` in your favorite browser and you will see Kibana's interface, and you're ready to go. :)
-Stopping it is simple. Issue `CTRL+C` in the terminal where Dockerific ELK is running, or if detached:
+
+Stopping the services is simple. Issue `CTRL+C` in the terminal where Dockerific ELK is running, and then:
 
 ```sh
 $ docker-compose down
 ```
 
-The Elasticsearch indices and data is stored in the directory `elasticsearch/data`. The included scripts can make automatic backups of them, look at the `maintenance` folder.
+The Elasticsearch indices and data is stored in the directory `elasticsearch/data`.
+The included scripts can make automatic backups of them, look in the `maintenance` folder.
 
 That's it. I hope it serves you well! Cheers and happy hacking! :)
 
