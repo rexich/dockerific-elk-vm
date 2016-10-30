@@ -32,7 +32,7 @@ Run the script maintenance/setup.sh on the host machine with superuser rights (u
 
 Make sure your user is in the `docker` group, otherwise prepend `sudo` to these commands. Start the Dockerific ELK stack by running:
 
-sh```
+```sh
 # Run the stack and display all messages
 $ docker-compose up
 
@@ -43,7 +43,7 @@ $ docker-compose up -d
 in the project's directory. Give it a few seconds to start, then open `https://localhost:5601` in your favorite browser and you will see Kibana's interface, and you're ready to go. :)
 Stopping it is simple. Issue `CTRL+C` in the terminal where Dockerific ELK is running, or if detached:
 
-sh```
+```sh
 $ docker-compose down
 ```
 
