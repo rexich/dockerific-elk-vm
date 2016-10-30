@@ -1,5 +1,7 @@
 version: '2'
 
+# Complete ELK stack that captures logs emited 
+
 services:
   # Define the Elasticsearch service
   elasticsearch:
@@ -46,15 +48,21 @@ services:
     # so they can communicate between each other
     networks:
       - elk_dockerized
+  # Define the Kibana service
   kibana:
     build: kibana/
+    # Volume for Kibana's configuration file
     volumes:
       - ./kibana/config/:/opt/kibana/config/
+    # Ports for getting to Kibana (open http://localhost:5610 in your browser to see it)
     ports:
       - "5601:5601"
+    # Put this container on the same Docker network as the others
+    # so they can communicate between each other
     networks:
       - elk_dockerized
 
+# One common network for our services to communicate together well
 networks:
   elk_dockerized:
     driver: bridge
