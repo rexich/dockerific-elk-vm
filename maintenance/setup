@@ -2,6 +2,7 @@
 
 # Prepares the system for running the Dockerific ELK stack.
 # Run without arguments to see usage details.
+# Why a shell script instead of a package? Portability, of course! :)
 
 # Copyright 2016 Filip Božanić Dimovski <dimfilip20@gmail.com>
 # This program is free software: you can redistribute it and/or modify
@@ -21,42 +22,44 @@
 # Stop the scipt in case any error occurs
 set -e
 
-# Echo all commands as they are called in the script's execution
+# Echo all commands as they executed - for debugging only
 #~ set -x
 
+# Store where the script is running from, used later when copying files
+OURDIR=$(dirname "$0")
 
 # Define some important functions
 function die () {
-    # Show error message and quit
+    # Show error message on stderr and quit
     echo >&2 -e "$@"
     exit 2
 }
 
 function delk-install() {
     # Configure rsyslog
-    echo -n "- Configuring rsyslog..."
+    echo -n "- Creating rsyslog configuration file..."
     if [ ! -f /etc/rsyslog.d/99-emit-logs.conf ]; then
         echo "*.*    @@localhost:5000" > /etc/rsyslog.d/99-emit-logs.conf
         service rsyslog restart 2>&1 1>/dev/null
         echo "DONE"
     else
-        echo "already configured, skipping."
+        echo "already created, skipping."
     fi
 
     # Configure sysctl
-    echo -n "- Configuring sysctl..."
+    echo -n "- Creating sysctl configuration file..."
     if [ ! -f /etc/sysctl.d/99-increase-max-map-count.conf ]; then
         echo "vm.max_map_count=262144" > /etc/sysctl.d/99-increase-max-map-count.conf
         sysctl -q --system 2>&1 1>/dev/null
         echo "DONE"
     else
-        echo "already configured, skipping."
+        echo "already created, skipping."
     fi
 
     # Install ls-images
     echo -n "- Installing ls-images utility..."
     if [ ! -x /usr/local/bin/ls-images ]; then
-        cp -f ./ls-images /usr/local/bin/ls-images
+        cp -f $OURDIR/ls-images /usr/local/bin/ls-images
         chmod 755 /usr/local/bin/ls-images
         echo "DONE"
     else
@@ -65,26 +68,71 @@ function delk-install() {
 
     # Install maintenance scripts
     echo -n "- Installing maintenance scripts..."
-    if [ ! -f /usr/local/bin/delk-maintenance ]; then
-        cp -f ./delk-maintenance /usr/local/bin/delk-maintenance
+    if [ ! -x /usr/local/bin/delk-maintenance ] && [ ! -f /etc/cron.d/delk-cron ]; then
+        cp -f $OURDIR/delk-maintenance /usr/local/bin/delk-maintenance
         chmod 755 /usr/local/bin/delk-maintenance
-        
+        cp -f $OURDIR/delk-cron /etc/cron.d/delk-cron
+        chmod 644 /etc/cron.d/delk-cron
         echo "DONE"
     else
         echo "already installed, skipping."
     fi
+
+    echo "Installation complete. Thank you for using the Dockerific ELK stack. :)"
+    exit 0
+}
+
+function delk-remove() {
+    # Remove rsyslog configuration file
+    echo -n "- Removing rsyslog configuration file..."
+    if [ -f /etc/rsyslog.d/99-emit-logs.conf ]; then
+        rm /etc/rsyslog.d/99-emit-logs.conf
+        service rsyslog restart 2>&1 1>/dev/null
+        echo "DONE"
+    else
+        echo "already removed, skipping."
+    fi
+
+    # Remove sysctl configuration file
+    echo -n "- Removing sysctl configuration file..."
+    if [ -f /etc/sysctl.d/99-increase-max-map-count.conf ]; then
+        rm /etc/sysctl.d/99-increase-max-map-count.conf
+        sysctl -q --system 2>&1 1>/dev/null
+        echo "DONE"
+    else
+        echo "already configured, skipping."
+    fi
+
+    # Remove ls-images
+    echo -n "- Removing ls-images utility..."
+    if [ -f /usr/local/bin/ls-images ]; then
+        rm /usr/local/bin/ls-images
+        echo "DONE"
+    else
+        echo "already removed, skipping."
+    fi
+
+    # Install maintenance scripts
+    echo -n "- Removing maintenance scripts..."
+    if [ -f /usr/local/bin/delk-maintenance ] && [ -f /etc/cron.d/delk-cron ]; then
+        rm /usr/local/bin/delk-maintenance
+        rm /etc/cron.d/delk-cron
+        echo "DONE"
+    else
+        echo "already removed, skipping."
+    fi
+
+    echo "Removal complete. Thank you for using the Dockerific ELK stack. :)"
+    exit 0
 }
 
 
+
 # Quit if not running as superuser
-[ ! $EUID = 0 ] || die "$0 must be run as superuser."
+[ $EUID = 0 ] || die "$0 must be run as superuser."
 
 # Quit if Docker is missing
-which docker 1>/dev/null || die "Docker cannot be found. Dockerific ELK stack reqires Docker to run.\nRefer to the project's documentation for installation instructions."
-
-
-
-
+which docker 1>/dev/null || die "Docker cannot be found. Dockerific ELK stack reqires Docker and Docker Compose to run.\nRefer to the project's documentation for installation instructions."
 
 
 # Process the switches
@@ -95,12 +143,9 @@ case "$1" in
     'remove')
         delk-remove
     ;;
-    'status')
-        delk-status
-    ;;
     *)
-        echo "$0 - script for setting up Dockerific ELK stack"
-        echo "Usage: $0 install|remove|status"
+        echo "$0 - script for setting up the Dockerific ELK stack"
+        echo "Usage: $0 [install|remove]"
         echo "Requires superuser privileges to run."
         echo
         echo "Copyright (c) 2016 Filip Božanić Dimovski"
