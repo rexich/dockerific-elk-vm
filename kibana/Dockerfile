@@ -8,7 +8,7 @@ FROM kibana:5
 
 RUN apt-get update && apt-get install -y netcat bzip2
 
-COPY entrypoint.sh /tmp/startup.sh
+COPY startup.sh /tmp/startup.sh
 RUN chmod +x /tmp/startup.sh
 
 # Replace the default command of the official image with this script
