@@ -16,13 +16,13 @@ Tested successfully on Ubuntu 14.04 LTS running on VirtualBox, and Ubuntu 16.04 
 * 4 GiB of RAM or more,
 * superuser rights for the setup script,
 * rsyslog installed and configured (by default in Ubuntu).
-* Curator installed (there is a script included that will do that for you).
+* latest [Curator](https://www.elastic.co/guide/en/elasticsearch/client/curator/current/apt-repository.html) installed.
 
 ## Important notes
 
 Running the setup script requires superuser (root) rights, because it adds a configuration file for rsyslog in its configuration directory, and also adds a sysctl tunable for [increasing the limit of the maximum number of memory-mapped areas](http://stackoverflow.com/a/11685165), since Elasticsearch performs more rigorous checks by default.
 
-Running the services using the `docker.io` package found in the official Ubuntu repositories is not supported.
+Running the services using the `docker.io` package found in the official Ubuntu repositories is NOT supported.
 
 ## Setup, installation, and removal
 
@@ -50,9 +50,14 @@ Stopping the services is simple. Issue `CTRL+C` in the terminal where Dockerific
 $ docker-compose down
 ```
 
-The Elasticsearch indices and data are stored in the directory `elasticsearch/data`.
-The included scripts can make automatic backups of them, look in the `maintenance` folder.
+## Some helpful information
 
-That's it. I hope it serves you well! Cheers and happy hacking! :)
+The Elasticsearch indices and data are stored in the directory `elasticsearch/data`. The included `cron` scripts will make automatic backups, warn in case of lack of free space, and run Curator to remove indices older than 30 days. All these goodies are located in the `maintenance` directory.
+
+This project expects to be located at `/home/rex/dockerific-elk-vm`, please change the apropriate paths in the `delk-cron` file and the `delk-maintenance` script. I will make it a possibility to declare this at installation in the future, stay tuned.
+
+For complete documentation about the process of running the Dockerific ELK stack in VirtualBox, how things work together, and how I got to succeed in making all of this possible, refer to the `doc/` directory and look at the source code of the `maintenance` scripts.
+
+Well, that would be all for now. I hope it serves you well! Cheers and happy hacking! :)
 
 Copyright © 2016 Filip Dimovski (dimfilip20@gmail.com). The scripts and files of this project's repository are subject to the GNU General Public License, version 3, unless noted otherwise.
