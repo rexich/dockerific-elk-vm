@@ -1,4 +1,4 @@
-# A step by step guide of setting up and running Dockerific ELK using Ubuntu 14.04 LTS on VirtualBox
+# A step by step guide of setting up and running Dockerific ELK using Ubuntu 14.04 LTS on VirtualBox, part 1
 
 This assignment consists of setting up a virtual (guest) machine running Ubuntu Server 14.04 and Docker, and running the ELK stack (Elasticsearch, Logstash, Kibana) as separate Docker containers within. The result is an ELK stack running in the virtual machine, parsing the syslog, and displaying the data in Kibana.
 
@@ -148,7 +148,7 @@ Next, you will be asked about the time zone. The installer said my time zone is 
 
 After some more hardware detection, the server will let you partition your hard drive. Since this will be the only operating system on the guest machine and we need to simply get it running as soon as possible, choose Guided - use the entire disk, since it will offer us sane defaults for our installation. Then, select the only disk that appears, called `sda` - the first SATA/SAS hard drive in the guest system.
 
-What will appear is a menu for configuring the partitions of the virtual hard drive. We will accept the defaults (first: primary partition ext4 for the root system, second: extended partition for the swap) and simply choose Finish partitioning and write changes to disk. You will be asked to confirm this and write changes to disk, choose Yes.
+What will appear is a menu for configuring the partitions of the virtual hard drive. We will accept the defaults (first: primary partition `ext4` for the root system, second: extended partition for the `swap`) and simply choose Finish partitioning and write changes to disk. You will be asked to confirm this and write changes to disk, choose Yes.
 
 The installer will start installing the base system and kernel, generate the `initramfs`, and then it will ask you to provide a HTTP proxy server. I do not need one, so I just pressed Enter. The `apt` packages lists will be updated, and the installer will retrieve updates and start installing the packages on the virtual hard drive.
 
@@ -160,3 +160,4 @@ After this is done, it will ask you where to install the GRUB boot loader. Since
 
 The installer will finish and tell you it is time to boot into your new system. Yes! Press Enter and your fresh new Ubuntu Server guest machine will boot up. That's it! :grin:
 
+Now we can continue to [the next part](setting_up_ubuntu_1404lts_virtualbox_part_02.md).
