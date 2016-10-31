@@ -25,7 +25,7 @@ if [ $EUID != 0 ] && ! id -Gn 2>/dev/null | grep --quiet '\bdocker\b'; then
 fi
 
 # Do not continue if Docker is not available.
-if [ ! -x "/usr/bin/docker" ]; then
+if ! which docker 1>/dev/null; then
     echo "Docker cannot be found. This tool reqires Docker to run."
     exit 2
 fi
