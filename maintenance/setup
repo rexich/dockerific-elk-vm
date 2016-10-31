@@ -38,8 +38,11 @@ function die () {
 function delk-install() {
     # Configure rsyslog
     echo -n "- Creating rsyslog configuration file..."
-    if [ ! -f /etc/rsyslog.d/99-emit-logs.conf ]; then
-        echo "*.*    @@localhost:5000" > /etc/rsyslog.d/99-emit-logs.conf
+    if [ ! -f /etc/rsyslog.d/99-emit-logs.conf ] && [ ! -f /etc/rsyslog.d/01-json-template.conf ]; then
+        cp -f $OURDIR/99-emit-logs.conf /etc/rsyslog.d/99-emit-logs.conf
+        chmod 644 /etc/rsyslog.d/99-emit-logs.conf
+        cp -f $OURDIR/01-json-template.conf /etc/rsyslog.d/01-json-template.conf
+        chmod 644 /etc/rsyslog.d/01-json-template.conf
         service rsyslog restart 2>&1 1>/dev/null
         echo "DONE"
     else
@@ -85,8 +88,9 @@ function delk-install() {
 function delk-remove() {
     # Remove rsyslog configuration file
     echo -n "- Removing rsyslog configuration file..."
-    if [ -f /etc/rsyslog.d/99-emit-logs.conf ]; then
+    if [ -f /etc/rsyslog.d/99-emit-logs.conf ] && [ -f /etc/rsyslog.d/01-json-template.conf ]; then
         rm /etc/rsyslog.d/99-emit-logs.conf
+        rm /etc/rsyslog.d/01-json-template.conf 
         service rsyslog restart 2>&1 1>/dev/null
         echo "DONE"
     else

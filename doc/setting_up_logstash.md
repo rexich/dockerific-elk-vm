@@ -30,7 +30,7 @@ It is obvious that it takes syslog kind of data on port 5000, and then outputs i
 On the host machine, we need to add a file with a line that will tell `rsyslog` to start emitting syslog entries also on TCP port 5000. This simple command, run as the superuser (not `sudo`!) does what we need:
 
 ```sh
-# echo "*.*    @@localhost:5000" > /etc/rsyslog.d/99-emit-logs.conf
+# echo "*.*    @localhost:5000" > /etc/rsyslog.d/99-emit-logs.conf
 ```
 
 The `setup.sh` does the trick for you when you run it for installation on the host machine.
