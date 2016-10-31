@@ -1,3 +1,5 @@
 # Ignore the maintenance directory, not needed by Docker
 doc
 maintenance
+LICENSE
+README.md
