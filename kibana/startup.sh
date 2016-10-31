@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 # Wait for the Elasticsearch container to be ready before starting Kibana.
-echo "Stalling for Elasticsearch"
+echo "Waiting for Elasticsearch to come online..."
 while true; do
     nc -q 1 elasticsearch 9200 2>/dev/null && break
 done
 
-echo "Starting Kibana"
+echo "Elasticsearch is up and running. Starting Kibana..."
 exec kibana
