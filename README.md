@@ -55,5 +55,4 @@ The included scripts can make automatic backups of them, look in the `maintenanc
 
 That's it. I hope it serves you well! Cheers and happy hacking! :)
 
-Copyright © 2016 Filip Dimovski (dimfilip20@gmail.com)
-The scripts and files of this project's repository are subject to the GNU General Public License, version 3, unless noted otherwise.
+Copyright © 2016 Filip Dimovski (dimfilip20@gmail.com). The scripts and files of this project's repository are subject to the GNU General Public License, version 3, unless noted otherwise.
