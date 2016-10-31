@@ -34,6 +34,20 @@ fi
 # There can be multiple images with the same name, but different tags!
 docker_image_names=(`docker images --format="{{.Repository}}:{{.Tag}}" | sort`)
 
+# Show help if --help is passed as an argument
+if [ "$1" == "--help" ]; then
+    echo "$0 - lists Docker images in the format:"
+    echo "Name:tag | Image ID | Size | No. of layers"
+    echo "Pass --header to add this header to the output as well."
+    echo
+    echo "Copyright (c) 2016 Filip Božanić Dimovski"
+    echo "Licensed under the GNU General Public License version 3"
+    exit 1
+fi
+
+# Show the header first if --header is passed as an argument
+[ "$1" == "--header" ] && echo "Name:tag | Image ID | Size | No. of layers"
+
 # Do the magic - "docker images" for formatted output, "docker history"
 # to count the number of layers. :)
 for i in "${docker_image_names[@]}"; do

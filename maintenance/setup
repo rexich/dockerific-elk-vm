@@ -132,7 +132,7 @@ function delk-remove() {
 [ $EUID = 0 ] || die "$0 must be run as superuser."
 
 # Quit if Docker is missing
-which docker 1>/dev/null || die "Docker cannot be found. Dockerific ELK stack reqires Docker and Docker Compose to run.\nRefer to the project's documentation for installation instructions."
+which docker 1>/dev/null || die "Docker cannot be found. Dockerific ELK stack reqires Docker and Docker Compose to run.\n Refer to the project's documentation for installation instructions."
 
 
 # Process the switches

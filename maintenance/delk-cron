@@ -1,0 +1,13 @@
+# /etc/cron.d/delk-cron: ELK stack maintenance cron file
+
+SHELL=/usr/bin/env bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+
+# Check the free space on all mounted systems, inform the administrator
+# by e-mail if it is less than 5%. Do this every 5 minutes.
+*/5 * * * * root /usr/local/bin/delk-maintenance freespace-check
+
+# Make rsync backups of the Elasticsearch data volume when it's offline,
+# every midnight on every Sunday. Edit the script to modify paths.
+0 0 * * Sun root /usr/local/bin/delk-maintenance backup

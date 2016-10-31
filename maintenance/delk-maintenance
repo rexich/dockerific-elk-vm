@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+
+# Dockerific ELK stack maintenance script.
+# This script is run as a cron job, it is not intended to be run manually.
+
+# Copyright 2016 Filip Božanić Dimovski <dimfilip20@gmail.com>
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+# Supply your own e-mail address where you will receive the warnings.
+# Make sure you mail transfer agent is properly configured, otherwise
+# no e-mail alert will be sent! (Check Ubuntu package: mailutils)
+DELK_ADMIN_EMAIL="dimfilip20@gmail.com"
+
+# Image name and tag of Elasticsearch
+DELK_ES_NAMETAG="elasticsearch:5"
+
+# Directory where Elasticsearch indices and data are stored (volume)
+DELK_ES_DATA_DIR="/home/rex/dockerific-elk-vm/elasticsearch/data"
+
+# Directory where backups of Elasticsearch data will be made
+DELK_BACKUP_DIR="/mnt/backups"
+
+
+# Define some important functions
+function delk-freespace-check() {
+    # Check if free space is getting low, send mail to the administrator
+    #if mountpoint usage is 95 percent or more.
+
+    # Get the list of mounted systems, without the virtual ones.
+    delk_mounted_filesystems=(`df -x tmpfs -x devtmpfs --output=source | sed -n '1!p' | sort`)
+
+    # Iterate over the list and check if any disk's usage is greater than
+    # or equal to 95%. Remove the percentage sign and get an integer.
+    for i in "${delk_mounted_filesystems[@]}"; do
+        j=`df $i --output=pcent | sed -n '1!p'`
+        delk_percentage=${j::-1}
+        if [ "$delk_percentage" -ge "95" ]; then
+            delk_message="Dockerific ELK stack maintenance: the mountpoint $i is almost full, $delk_percentage% in use. Free up some space as soon as possible!"
+            delk_datetime=`date "+%Y-%m-%d %H:%M (%A)"`
+
+            # Write warning to syslog
+            logger -t WARNING -s $delk_message
+
+            # Send e-mail if possible
+            if which mail 1>/dev/null; then
+                mail -s "Dockerific ELK stack maintenance - $delk_datetime - WARNING: mountpoint $i full" \
+                $DELK_ADMIN_EMAIL <<< $delk_message
+            else
+                echo "Mail transfer agent not configured. Mail alert not sent!" >&2
+                exit 2
+            fi
+        fi
+    done
+    exit 0
+}
+
+function delk-backup() {
+    # Perform rsync-based backup of Elasticdata's data volume.
+    # The backup will be performed ONLY when Elasticdata's container
+    # is NOT running, to avoid data corruption. Modify the cron file
+    # to schedule maintenance when you see it fit (Sundays?).
+
+    # If Elasticsearch is started, abort backup to avoid corruption.
+    # How it works: if there is any running container with the name and
+    # tag of our Elasticsearch version, it will be outputted by "docker ps".
+    # Remove the first line (the header). If after the header no lines
+    # are present, then it is not running (wc will return 0 counted
+    # lines in this case). Otherwise, it is running, and this script
+    # will abort execution and complain in the syslog.
+    if [ ! `docker ps --filter ancestor="DELK_ES_NAMETAG" | sed -n '1!p' | wc -l 2>/dev/null` ]; then
+        logger -t WARNING -s "Dockerific ELK stack maintenance: Elasticsearch container is running, backup od the data volume will NOT be performed."
+        exit 3
+    fi
+
+    # If no media is mounted on the backup destination area, abort.
+    if ! mount | grep $DELK_BACKUP_DIR >/dev/null && [ ! -d $DELK_BACKUP_DIR ] ; then
+        logger -t WARNING -s "Dockerific ELK stack maintenance: The backup directory is not mounted, backup od the data volume will NOT be performed."
+        exit 4
+    fi
+
+    # Finally, all sanity checks passed, let's make a backup. Preserve
+    # all attributes, just in case.
+    rsync -aHAX $DELK_ES_DATA_DIR $DELK_BACKUP_DIR
+    exit 0
+}
+
+
+# Quit if not running as superuser
+[ $EUID = 0 ] || echo >&2 -e "$0 must be run as superuser." && exit 1
+
+# Process the switches
+case "$1" in
+    'freespace-check')
+        delk-freespace-check
+    ;;
+    'backup')
+        delk-backup
+    ;;
+    *)
+        echo "$0 - script for maintaining up the Dockerific ELK stack"
+        echo "Usage: $0 [freespace-check|backup]"
+        echo "Requires superuser privileges to run."
+        echo "Runs as a part of a cron job, not intended to be run manually."
+        echo
+        echo "Copyright (c) 2016 Filip Božanić Dimovski"
+        echo "Licensed under the GNU General Public License version 3"
+        exit 1
+    ;;
+esac

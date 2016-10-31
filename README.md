@@ -28,7 +28,7 @@ Running the services using the `docker.io` package found in the official Ubuntu 
 
 Clone (or download as ZIP) this repository to the host computer. Install Docker Engine and Docker Compose.
 
-Run the script `maintenance/setup.sh` on the host machine with superuser rights (using `sudo`). It will configure `rsyslog` to emit the logs to Logstash, set the necessary `sysctl` tunable for Elasticsearch, configure several `cron` scripts for maintenance tasks, and add a tool called `ls-images` that displays a pretty-printed list of all available Docker images. Run `setup.sh --help` for detailed information, including removal.
+Run the script `maintenance/setup` on the host machine with superuser rights (using `sudo`). It will configure `rsyslog` to emit the logs to Logstash, set the necessary `sysctl` tunable for Elasticsearch, configure several `cron` scripts for maintenance tasks, and add a tool called `ls-images` that displays a pretty-printed list of all available Docker images. Run `maintenance/setup` with no arguments for more information.
 
 ## Usage
 
@@ -50,7 +50,7 @@ Stopping the services is simple. Issue `CTRL+C` in the terminal where Dockerific
 $ docker-compose down
 ```
 
-The Elasticsearch indices and data is stored in the directory `elasticsearch/data`.
+The Elasticsearch indices and data are stored in the directory `elasticsearch/data`.
 The included scripts can make automatic backups of them, look in the `maintenance` folder.
 
 That's it. I hope it serves you well! Cheers and happy hacking! :)
