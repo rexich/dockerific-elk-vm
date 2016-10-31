@@ -1,6 +1,5 @@
 # Starting with version 5, network host should not be localhost,
 # since it does not perform well within a Docker container instance.
-# See: 
 network.host: 0.0.0.0
 
 # One node is enough to form a cluster

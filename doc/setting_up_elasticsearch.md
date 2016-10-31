@@ -1,8 +1,6 @@
 # Setting up and configuring Elasticsearch
 
-Elasticsearch is the component that is going to receive input from Logstash in the form of properly-formatted syslog data. I used Docker Compose to automate the process of creating the image using the official one, and configuring the ports and volumes.
-
-At first, I've created a `docker-compose.yml` file for Elasticsearch only for testing, and once I was sure everything works well, I've integrated it in the main `docker-compose.yml` file of the Dockerific ELK stack.
+Elasticsearch is the component that is going to receive input from Logstash in the form of properly-formatted syslog data. I used Docker Compose to automate the process of creating the image using the official one, and configuring the ports and volumes. At first, I've created a `docker-compose.yml` file for Elasticsearch only for testing, and once I was sure everything works well, I've integrated it in the main `docker-compose.yml` file of the Dockerific ELK stack.
 
 I built and ran the server by issuing `docker-compose up` in the `elasticsearch/` directory where the Dockerfile and necessary directories and configuration resided. When the Elasticsearch container started the first time on the host machine, an error appeared with error code 78 and the container stopped.
 
@@ -96,6 +94,12 @@ Name   Command   State   Ports
 ------------------------------
 ```
 
-Check the `elasticsearch/config/elasticsearch.yml` for the configuration, everything is well-documented.
+The configuration file `elasticsearch/config/elasticsearch.yml` is mounted as a volume.
+
+* The setting `network.host: 0.0.0.0` is required starting with Elasticsearch version 5, since it does not presume that is running on `localhost`.
+* I set `discovery.zen.minimum_master_nodes: 1` so that one node is enough to form a cluster. For this project it is enough, but for production use this number should be higher, to allow replicas of the shards to be created successfully.
+* To set up a cluster, all nodes must have the same `cluster.name: production`, and each node has to have a different name. Here, `node.name: ${HOSTNAME}` takes the name of the host machine and that simplifies our life.
+* I've made this node the master node using `node.master: true`, that will also hold data `node.data: true`.
+* The last line configures the log files path, if you need them: `path.logs: /var/log/elasticsearch`.
 
 This concludes the configuration and testing of Elasticsearch.
