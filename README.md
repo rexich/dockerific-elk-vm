@@ -15,7 +15,7 @@ Tested successfully on Ubuntu 14.04 LTS running on VirtualBox, and Ubuntu 16.04 
 * latest [Docker Compose](https://docs.docker.com/compose/install/) installed (tested on 1.8.1),
 * 4 GiB of RAM or more,
 * superuser rights for the setup script,
-* rsyslog installed and configured (by default in Ubuntu).
+* rsyslog installed and configured (by default in Ubuntu),
 * latest [Curator](https://www.elastic.co/guide/en/elasticsearch/client/curator/current/apt-repository.html) installed.
 
 ## Important notes
@@ -56,7 +56,7 @@ The Elasticsearch indices and data are stored in the directory `elasticsearch/da
 
 This project expects to be located at `/home/rex/dockerific-elk-vm`, please change the apropriate paths in the `delk-cron` file and the `delk-maintenance` script. I will make it a possibility to declare this at installation in the future, stay tuned.
 
-For complete documentation about the process of running the Dockerific ELK stack in VirtualBox, how things work together, and how I got to succeed in making all of this possible, refer to the `doc/` directory and look at the source code of the scripts in `maintenance/`.
+For complete documentation about the process of running the Dockerific ELK stack in VirtualBox, [how things work together](doc/how_everything_works.md), and how I got to succeed in making all of this possible, refer to the `doc/` directory and look at the source code of the scripts in `maintenance/`. :bear:
 
 Well, that would be all for now. I hope it serves you well! Cheers and happy hacking! :)
 

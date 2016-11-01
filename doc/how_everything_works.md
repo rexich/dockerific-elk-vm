@@ -8,7 +8,7 @@ We can see that we have a VirtualBox guest machine that holds the Ubuntu Server 
 
 The guest machine is set to expose port `5601` for accessing the Kibana instance, and `4286` for connecting to the machine through OpenSSH, all to be utilized by the host machine only. I have chosen `4286` because I already have an OpenSSH daemon running on my host machine on port `22`, and this way we avoid confusion.
 
-Inside the guest machine there is the Docker daemon running, and the three instances of Elasticsearch, Kibana and Logstash are started in parallel using Docker Compose.
+Inside the guest machine there is the Docker daemon running, and the three instances of Elasticsearch, Kibana and Logstash are started in parallel using Docker Compose, all on the same Docker network.
 
 The `maintenance/setup` script sets the guest machine's `rsyslog` server to send the system log messages through TCP port `5000` to whomever connects to it, and since it works within the guest environment, it is all right. In case we want to use this on a production machine, we need to edit the `/etc/rsyslog.d/99-emit-logs.conf` file and set the correct server name, for example:
 
@@ -32,4 +32,4 @@ A `cron` job automates backups of Elasticsearch's data volume every midnight on 
 
 Also, a `cron` job will check for free disk space on all mount points every 5 minutes and alert the administrator in case any has 5% free space left or less. 
 
-That's all, folks! :grin:
+That's all, folks!
