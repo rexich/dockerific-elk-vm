@@ -29,7 +29,7 @@ rex@ultrabuk:~/work/testing/elasticsearch$ sudo sysctl -w vm.max_map_count=26214
 vm.max_map_count = 262144
 ```
 
-This setting is necessary, but will last only until the next boot, so the `setup.sh` makes it permanent by creating a file in `/etc/sysctl.d/99-increase-max-map-count.conf` with this command.
+This setting is necessary, but will last only until the next boot, so the `maintenance/setup` makes it permanent by creating a file in `/etc/sysctl.d/99-increase-max-map-count.conf` with this command.
 
 Now, running the container again shows that Elasticsearch is up and running:
 

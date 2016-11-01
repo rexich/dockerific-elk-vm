@@ -58,7 +58,7 @@ function delk-freespace-check() {
                 mail -s "Dockerific ELK stack maintenance - $delk_datetime - WARNING: mountpoint $i full" \
                 $DELK_ADMIN_EMAIL <<< $delk_message
             else
-                echo "Mail transfer agent not configured. Mail alert not sent!" >&2
+                logger -t WARNING -s "Dockerific ELK stack maintenance: Mail transfer agent not configured. Mail alert not sent!" >&2
                 exit 2
             fi
         fi
@@ -90,9 +90,10 @@ function delk-backup() {
         exit 4
     fi
 
-    # Finally, all sanity checks passed, let's make a backup. Preserve
-    # all attributes, just in case.
-    rsync -aHAX $DELK_ES_DATA_DIR $DELK_BACKUP_DIR
+    # Finally, all sanity checks passed, let's make a backup.
+    # Preserve all attributes, just in case, and name the directory by date.
+    rsync -aHAX $DELK_ES_DATA_DIR $DELK_BACKUP_DIR/`date "+%Y-%m-%d %H:%M"`
+    logger -t WARNING -s "Dockerific ELK stack maintenance: Backup complete. `date "+%Y-%m-%d %H:%M"`"
     exit 0
 }
 

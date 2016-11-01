@@ -25,12 +25,12 @@ output {
 
 ```
 
-It is obvious that it takes syslog kind of data on port 5000, and then outputs it to our Elasticsearch instance (the hostname is the name of the service's container!) on port 9200. Later running Kebana and checking the data proved it works fine.
+It is obvious that it takes syslog kind of data on port 5000, and then outputs it to our Elasticsearch instance (the hostname is the name of the service's container!) on port 9200. Later running Kibana and checking the data proved it works fine.
 
-On the host machine, we need to add a file with a line that will tell `rsyslog` to start emitting syslog entries also on TCP port 5000. This simple command, run as the superuser (not `sudo`!) does what we need:
+On the host machine, we need to add a file with a line that will tell `rsyslog` to start emitting syslog entries also on TCP port `5000`. This simple command, run as the superuser (not `sudo`!) does what we need:
 
 ```sh
-# echo "*.*    @localhost:5000" > /etc/rsyslog.d/99-emit-logs.conf
+# echo "*.*    @@localhost:5000" > /etc/rsyslog.d/99-emit-logs.conf
 ```
 
 The `setup.sh` does the trick for you when you run it for installation on the host machine.

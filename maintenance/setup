@@ -135,6 +135,8 @@ function delk-remove() {
 # Quit if Docker is missing
 which docker 1>/dev/null || die "Docker cannot be found. Dockerific ELK stack reqires Docker and Docker Compose to run.\n Refer to the project's documentation for installation instructions."
 
+# Quit if Curator is missing
+which curator 1>/dev/null || die "Curator cannot be found. Dockerific ELK stack reqires Curator to run the maintenance.\n Refer to the project's documentation for installation instructions."
 
 # Process the switches
 case "$1" in

@@ -8,8 +8,8 @@ The configuration file resides in `kibana/config/kibana.yml` mounted as a volume
 
 * We need to use server port 5601 to get into Kibana's web inteface, so: `server.port: 5601`;
 * Same as with Elasticsearch, we need to avoid using `localhost` to get to our server, that is why: `server.host: "0.0.0.0"`;
-* Most importantly, we need to tell Kebana where Elasticsearch is: `elasticsearch.url: "http://elasticsearch:9200"`.
+* Most importantly, we need to tell Kibana where Elasticsearch is: `elasticsearch.url: "http://elasticsearch:9200"`.
 
-Once the whole Dockerific ELK stack starts up, and Kebana starts last, I've opened the website by pointing my browser at `localhost:5601`, gave Kibana few seconds to get ready and the web interface was up and running, and I was able to browse and visualize the logs! Voilà! :satisfied:
+Once the whole Dockerific ELK stack starts up, and Kibana starts last, I've opened the website by pointing my browser at `localhost:5601`, gave Kibana few seconds to get ready and the web interface was up and running, and I was able to browse and visualize the logs! Voilà! :satisfied:
 
 This concludes the configuration and testing of Kibana.
